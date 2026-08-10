@@ -32,4 +32,11 @@ describe('findGitRoot', () => {
   it('존재하지 않는 경로도 null을 준다 (예외를 던지지 않는다)', () => {
     expect(findGitRoot(path.join(OUTSIDE_REPO, '__ccaudit_definitely_missing__'))).toBeNull();
   });
+
+  it('시작 디렉터리가 없으면 상위로 올라가지 않는다', () => {
+    // 이 경로의 상위에는 ccaudit 리포의 .git 이 있다. 그래도 null 이어야 한다 —
+    // 존재하지 않는 cwd 는 "판정 불가"이지, 남의 저장소에 귀속시킬 근거가 아니다.
+    // 다른 PC에서 기록된 세션의 cwd 가 로컬에 없을 때 실제로 이 경로를 탄다.
+    expect(findGitRoot('tests/fixtures/__ccaudit_no_such_dir__')).toBeNull();
+  });
 });

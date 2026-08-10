@@ -24,8 +24,16 @@ function git(root: string, args: string[], input?: string): string | null {
   }
 }
 
-/** 위로 올라가며 .git 을 찾는다. git 실행 없이 파일시스템만 본다. */
+/**
+ * 위로 올라가며 .git 을 찾는다. git 실행 없이 파일시스템만 본다.
+ *
+ * 시작 디렉터리가 존재하지 않으면 즉시 null 이다. 다른 PC에서 기록된 세션의 cwd 는
+ * 로컬에 없는 것이 정상인데, 그때 상위로 올라가면 **이 프로그램이 실행 중인 저장소**를
+ * 남의 프로젝트 루트로 잘못 집어낸다. 없는 경로는 "판정 불가"로 남긴다.
+ */
 export function findGitRoot(dir: string): string | null {
+  if (!existsSync(dir)) return null;
+
   let cur = normalizePath(path.resolve(dir));
   for (let i = 0; i < 64; i++) {
     if (existsSync(path.join(cur, '.git'))) return cur;
