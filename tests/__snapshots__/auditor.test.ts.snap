@@ -1,0 +1,274 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`AuditReport 골든 스냅샷 > CJK 픽스처의 구조가 고정된다 1`] = `
+[
+  {
+    "files": [
+      {
+        "absPath": "C:/Users/testuser/work/공모전/오픈소스/설계.md",
+        "diff": null,
+        "diffAvailability": "partial",
+        "gitState": "unknown",
+        "id": "7c9cc9d510c6a802",
+        "relPath": "설계.md",
+        "status": "deleted",
+        "touches": [
+          {
+            "at": "2026-07-21T01:10:20.000Z",
+            "messageId": "a1",
+            "sessionId": "22222222-2222-2222-2222-222222222222",
+            "tool": "Write",
+          },
+        ],
+        "versions": [
+          {
+            "backupFile": null,
+            "backupTime": "2026-07-21T01:10:35.000Z",
+            "contentAvailable": false,
+            "sessionId": "22222222-2222-2222-2222-222222222222",
+            "version": 1,
+          },
+          {
+            "backupFile": "cccc3333@v2",
+            "backupTime": "2026-07-21T01:11:00.000Z",
+            "contentAvailable": true,
+            "sessionId": "22222222-2222-2222-2222-222222222222",
+            "version": 2,
+          },
+        ],
+      },
+    ],
+    "meta": {
+      "ccVersions": [
+        "2.0.0",
+      ],
+      "generatedAt": "FIXED",
+      "toolVersion": "0.1.0",
+    },
+    "project": {
+      "displayName": "오픈소스",
+      "isGitRepo": false,
+      "root": "C:/Users/testuser/work/공모전/오픈소스",
+    },
+    "range": {
+      "from": "2026-07-21T01:10:00.000Z",
+      "to": "2026-07-21T01:10:35.000Z",
+    },
+    "sessions": [
+      {
+        "ccVersion": "2.0.0",
+        "counts": {
+          "assistant": 1,
+          "tools": {
+            "Write": 1,
+          },
+          "user": 1,
+        },
+        "cwds": [
+          "C:/Users/testuser/work/공모전/오픈소스",
+        ],
+        "endedAt": "2026-07-21T01:10:35.000Z",
+        "fileIds": [
+          "7c9cc9d510c6a802",
+        ],
+        "firstPrompt": "[redacted prompt]",
+        "gitBranches": [
+          "main",
+        ],
+        "id": "22222222-2222-2222-2222-222222222222",
+        "inProgress": false,
+        "launchCwd": "C:/Users/testuser/work/공모전/오픈소스",
+        "messages": [
+          {
+            "at": "2026-07-21T01:10:00.000Z",
+            "role": "user",
+            "text": "[redacted prompt]",
+            "toolCalls": [],
+            "uuid": "u1",
+          },
+          {
+            "at": "2026-07-21T01:10:20.000Z",
+            "role": "assistant",
+            "text": "",
+            "toolCalls": [
+              {
+                "name": "Write",
+                "summary": "C:/Users/testuser/work/공모전/오픈소스/설계.md",
+              },
+            ],
+            "uuid": "a1",
+          },
+        ],
+        "model": "claude-opus-5",
+        "startedAt": "2026-07-21T01:10:00.000Z",
+        "title": "오픈소스 세션",
+        "tokens": {
+          "cacheCreation": 51,
+          "cacheRead": 101,
+          "input": 11,
+          "output": 21,
+        },
+      },
+    ],
+    "stats": {
+      "created": 0,
+      "external": 0,
+      "linesAdded": 0,
+      "linesRemoved": 0,
+      "lost": 0,
+      "modified": 0,
+      "redacted": 0,
+      "sessions": 1,
+      "tokens": {
+        "cacheCreation": 51,
+        "cacheRead": 101,
+        "input": 11,
+        "output": 21,
+      },
+      "uncommitted": 0,
+    },
+    "warnings": [
+      {
+        "kind": "missing-backup",
+        "message": "설계.md: 일부 버전의 백업이 없어 전체 복원이 불가합니다.",
+        "ref": "7c9cc9d510c6a802",
+        "severity": "low",
+      },
+    ],
+  },
+  {
+    "files": [
+      {
+        "absPath": "C:/Users/testuser/work/공모전/임베디드/진행상황.md",
+        "diff": null,
+        "diffAvailability": "partial",
+        "gitState": "unknown",
+        "id": "9f4064d46badaf3c",
+        "relPath": "진행상황.md",
+        "status": "deleted",
+        "touches": [
+          {
+            "at": "2026-07-20T05:35:20.000Z",
+            "messageId": "a1",
+            "sessionId": "11111111-1111-1111-1111-111111111111",
+            "tool": "Write",
+          },
+        ],
+        "versions": [
+          {
+            "backupFile": null,
+            "backupTime": "2026-07-20T05:35:35.000Z",
+            "contentAvailable": false,
+            "sessionId": "11111111-1111-1111-1111-111111111111",
+            "version": 1,
+          },
+          {
+            "backupFile": "aaaa1111@v2",
+            "backupTime": "2026-07-20T05:36:00.000Z",
+            "contentAvailable": true,
+            "sessionId": "11111111-1111-1111-1111-111111111111",
+            "version": 2,
+          },
+        ],
+      },
+    ],
+    "meta": {
+      "ccVersions": [
+        "2.0.0",
+      ],
+      "generatedAt": "FIXED",
+      "toolVersion": "0.1.0",
+    },
+    "project": {
+      "displayName": "임베디드",
+      "isGitRepo": false,
+      "root": "C:/Users/testuser/work/공모전/임베디드",
+    },
+    "range": {
+      "from": "2026-07-20T05:35:00.000Z",
+      "to": "2026-07-20T05:35:35.000Z",
+    },
+    "sessions": [
+      {
+        "ccVersion": "2.0.0",
+        "counts": {
+          "assistant": 1,
+          "tools": {
+            "Write": 1,
+          },
+          "user": 1,
+        },
+        "cwds": [
+          "C:/Users/testuser/work/공모전/임베디드",
+        ],
+        "endedAt": "2026-07-20T05:35:35.000Z",
+        "fileIds": [
+          "9f4064d46badaf3c",
+        ],
+        "firstPrompt": "[redacted prompt]",
+        "gitBranches": [
+          "main",
+        ],
+        "id": "11111111-1111-1111-1111-111111111111",
+        "inProgress": false,
+        "launchCwd": "C:/Users/testuser/work/공모전/임베디드",
+        "messages": [
+          {
+            "at": "2026-07-20T05:35:00.000Z",
+            "role": "user",
+            "text": "[redacted prompt]",
+            "toolCalls": [],
+            "uuid": "u1",
+          },
+          {
+            "at": "2026-07-20T05:35:20.000Z",
+            "role": "assistant",
+            "text": "",
+            "toolCalls": [
+              {
+                "name": "Write",
+                "summary": "C:/Users/testuser/work/공모전/임베디드/진행상황.md",
+              },
+            ],
+            "uuid": "a1",
+          },
+        ],
+        "model": "claude-opus-5",
+        "startedAt": "2026-07-20T05:35:00.000Z",
+        "title": "임베디드 세션",
+        "tokens": {
+          "cacheCreation": 50,
+          "cacheRead": 100,
+          "input": 10,
+          "output": 20,
+        },
+      },
+    ],
+    "stats": {
+      "created": 0,
+      "external": 0,
+      "linesAdded": 0,
+      "linesRemoved": 0,
+      "lost": 0,
+      "modified": 0,
+      "redacted": 0,
+      "sessions": 1,
+      "tokens": {
+        "cacheCreation": 50,
+        "cacheRead": 100,
+        "input": 10,
+        "output": 20,
+      },
+      "uncommitted": 0,
+    },
+    "warnings": [
+      {
+        "kind": "missing-backup",
+        "message": "진행상황.md: 일부 버전의 백업이 없어 전체 복원이 불가합니다.",
+        "ref": "9f4064d46badaf3c",
+        "severity": "low",
+      },
+    ],
+  },
+]
+`;
