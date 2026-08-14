@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { readSessionFile } from '../src/reader/jsonl.js';
 import { listSessionFiles } from '../src/reader/discover.js';
 import { extractSessionMeta, groupIntoProjects } from '../src/resolver/projects.js';
-import { auditProject } from '../src/auditor/index.js';
+import { auditProject, shouldWarnMissingBackup } from '../src/auditor/index.js';
 import type { RawRecord } from '../src/reader/jsonl.js';
 
 function auditAll(home: string) {
@@ -83,5 +83,37 @@ describe('AuditReport 골든 스냅샷', () => {
         meta: { ...r.meta, generatedAt: 'FIXED' },   // 시간은 스냅샷에서 제외
       }));
     expect(reports).toMatchSnapshot();
+  });
+});
+
+// 도그푸딩(2026-08-14): 실제 리포에서 missing-backup 경고 60건 중 대부분이
+// "Claude 가 새로 만든 파일의 v1 에 이전 내용이 없다"는, 당연한 사실에 대한 경고였다.
+// 표시(diffAvailability)는 스펙대로 정직하게 두고, 경고에서만 뺀다.
+describe('shouldWarnMissingBackup', () => {
+  const v = (version: number, backupFile: string | null) =>
+    ({ version, backupFile, backupTime: '' });
+
+  it('생성된 파일의 v1 백업 없음은 경고하지 않는다', () => {
+    expect(shouldWarnMissingBackup('created', [v(1, null)])).toBe(false);
+  });
+
+  it('생성된 파일이라도 v1 이후 백업이 비면 경고한다', () => {
+    expect(shouldWarnMissingBackup('created', [v(1, null), v(2, null)])).toBe(true);
+  });
+
+  it('생성된 파일의 나머지 버전에 백업이 다 있으면 경고하지 않는다', () => {
+    expect(shouldWarnMissingBackup('created', [v(1, null), v(2, 'h@v2')])).toBe(false);
+  });
+
+  it('수정된 파일의 v1 백업 없음은 진짜 구멍이므로 경고한다', () => {
+    expect(shouldWarnMissingBackup('modified', [v(1, null), v(2, 'h@v2')])).toBe(true);
+  });
+
+  it('백업이 전부 있으면 경고하지 않는다', () => {
+    expect(shouldWarnMissingBackup('modified', [v(1, 'h@v1'), v(2, 'h@v2')])).toBe(false);
+  });
+
+  it('버전 자체가 하나도 없으면 경고한다 (복원 근거가 없다)', () => {
+    expect(shouldWarnMissingBackup('deleted', [])).toBe(true);
   });
 });

@@ -5,7 +5,7 @@ import type {
 import { emptyReport, emptyTokenSum } from '../types.js';
 import type { Project, SessionMeta } from '../resolver/projects.js';
 import { hashPath, relativeTo, normalizePath } from '../resolver/paths.js';
-import { listBlobHashesForPath } from '../resolver/git.js';
+import { listBlobHashesForPath, findRepoForFile } from '../resolver/git.js';
 import { buildTimelines, type VersionEntry } from './timeline.js';
 import { loadVersion, loadCurrent, availabilityOf } from './content.js';
 import { makeDiff, countLines } from './diff.js';
@@ -79,6 +79,23 @@ function countTools(records: RawRecord[]): Record<string, number> {
   return out;
 }
 
+/**
+ * 백업 구멍을 **경고**로 띄울지 판단한다.
+ *
+ * 생성된 파일의 v1 에 백업이 없는 것은 구멍이 아니라 정의상 당연한 일이다(생성 전 내용이
+ * 없으니까). 이걸 경고하면 실제 리포에서 경고의 대부분이 이 항목으로 채워져 진짜 문제
+ * (유실·복원 불가)가 묻힌다. 표시용 `diffAvailability` 는 스펙 7-3 대로 손대지 않는다 —
+ * "없는 것을 있는 것처럼 표시하지 않는다".
+ */
+export function shouldWarnMissingBackup(
+  status: FileAudit['status'],
+  versions: VersionEntry[],
+): boolean {
+  if (versions.length === 0) return true;   // 복원 근거가 아예 없다
+  const suspect = status === 'created' ? versions.slice(1) : versions;
+  return suspect.some((v) => v.backupFile === null);
+}
+
 export function auditProject(args: {
   home: string;
   project: Project;
@@ -90,6 +107,7 @@ export function auditProject(args: {
   report.project.isGitRepo = project.isGitRepo;
 
   const warnings: Warning[] = [];
+  const gitRootCache = new Map<string, string | null>();   // 디렉터리 → 저장소 루트
   const accums = new Map<string, Accum>();
   const ccVersions = new Set<string>();
   const sessions: SessionSummary[] = [];
@@ -188,9 +206,10 @@ export function auditProject(args: {
       originalContent = loadVersion(home, firstGroup.sessionId, firstVersion);
     }
 
-    const gitBlobs = project.isGitRepo && relPath !== null && relPath !== ''
-      ? listBlobHashesForPath(project.root, relPath)
-      : null;
+    // 판정은 **파일이 속한 저장소** 기준이다. 프로젝트 루트가 저장소가 아니어도
+    // (저장소 부모에서 Claude 를 띄운 경우) 파일별로는 커밋 여부를 알 수 있다.
+    const repo = findRepoForFile(acc.absPath, gitRootCache);
+    const gitBlobs = repo ? listBlobHashesForPath(repo.root, repo.relPath) : null;
 
     const gitState = classify({ finalContent, currentContent, gitBlobs });
     const diff = makeDiff(originalContent, currentContent, relPath ?? acc.absPath);
@@ -198,7 +217,7 @@ export function auditProject(args: {
       acc.versionsBySession.flatMap((g) => g.versions),
     );
 
-    if (availability !== 'full') {
+    if (shouldWarnMissingBackup(status, acc.versionsBySession.flatMap((g) => g.versions))) {
       warnings.push({
         kind: 'missing-backup',
         severity: 'low',

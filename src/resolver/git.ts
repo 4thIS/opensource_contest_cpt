@@ -2,7 +2,7 @@ import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
-import { normalizePath } from './paths.js';
+import { normalizePath, relativeTo } from './paths.js';
 
 /** git의 blob 오브젝트 해시. `blob <len>\0<content>` 의 SHA-1. */
 export function blobHash(content: Buffer): string {
@@ -42,6 +42,35 @@ export function findGitRoot(dir: string): string | null {
     cur = parent;
   }
   return null;
+}
+
+/**
+ * 파일 **하나**가 속한 저장소와 그 저장소 기준 상대경로.
+ *
+ * 판정 기준을 프로젝트 루트가 아니라 파일에 두는 이유: 저장소의 **부모**에서 Claude 를
+ * 띄우는 배치가 흔한데(예: `work/공모전/오픈소스` 에서 띄우고 저장소는 그 아래), 그때
+ * 프로젝트 루트는 저장소가 아니라서 모든 파일이 '판정 불가'가 된다. 모노레포·중첩
+ * 저장소도 같은 이유로 파일별 판정이 맞다.
+ *
+ * `cache` 는 디렉터리 → 루트 결과를 재사용한다(파일 수십 개가 같은 폴더에 몰린다).
+ * 없는 경로는 `findGitRoot` 가 null 을 주므로 남의 저장소로 귀속되지 않는다.
+ */
+export function findRepoForFile(
+  absPath: string,
+  cache?: Map<string, string | null>,
+): { root: string; relPath: string } | null {
+  const dir = normalizePath(path.dirname(normalizePath(absPath)));
+
+  let root = cache?.get(dir);
+  if (root === undefined) {
+    root = findGitRoot(dir);
+    cache?.set(dir, root);
+  }
+  if (root === null) return null;
+
+  const rel = relativeTo(root, absPath);
+  if (rel === null || rel === '') return null;
+  return { root, relPath: rel };
 }
 
 /**
