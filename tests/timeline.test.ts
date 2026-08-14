@@ -36,6 +36,22 @@ describe('buildTimelines', () => {
     ]);
   });
 
+  // 도그푸딩(2026-08-14): 실제 세션의 델타는 trackingPath 가 cwd 기준 상대경로로 들어온다.
+  // 풀지 않으면 같은 파일이 "(프로젝트 외부)" 유령 항목으로 한 번 더 생긴다.
+  it('델타의 상대경로 키도 cwd 기준 절대경로로 푼다', () => {
+    const t = buildTimelines([delta('sub\\b.md', 1, null)], 's1', CWD);
+    expect(t[0]!.absPath).toBe('C:/w/proj/sub/b.md');
+  });
+
+  it('상대경로 델타와 절대경로 스냅샷을 같은 파일로 본다', () => {
+    const t = buildTimelines([
+      delta('a.md', 1, null),
+      snapshot({ 'a.md': { backupFileName: 'h@v2', version: 2 } }),
+    ], 's1', CWD);
+    expect(t).toHaveLength(1);
+    expect(t[0]!.absPath).toBe('C:/w/proj/a.md');
+  });
+
   it('스냅샷의 상대경로 키를 cwd 기준 절대경로로 푼다', () => {
     const t = buildTimelines([snapshot({ 'sub\\b.md': { backupFileName: 'h1@v2', version: 2 } })], 's1', CWD);
     expect(t[0]!.absPath).toBe('C:/w/proj/sub/b.md');

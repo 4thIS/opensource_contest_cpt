@@ -29,8 +29,8 @@ function readBackup(v: unknown): { version: number; backupFile: string | null; b
   };
 }
 
-/** 스냅샷 키는 cwd 기준 상대경로이고 OS 구분자를 쓴다. */
-function resolveSnapshotKey(key: string, launchCwd: string): string {
+/** 델타의 trackingPath 와 스냅샷 키는 cwd 기준 상대경로일 수 있고 OS 구분자를 쓴다. */
+function resolveTrackingPath(key: string, launchCwd: string): string {
   const k = normalizePath(key);
   if (/^[A-Z]:\//.test(k) || k.startsWith('/')) return k;   // 이미 절대경로
   return normalizePath(`${launchCwd}/${k}`);
@@ -71,7 +71,7 @@ export function buildTimelines(
     if (r.type === 'file-history-delta') {
       const p = typeof r.trackingPath === 'string' ? r.trackingPath : null;
       const b = readBackup(r.backup);
-      if (p && b) addVersion(normalizePath(p), b);
+      if (p && b) addVersion(resolveTrackingPath(p, launchCwd), b);
       continue;
     }
 
@@ -81,7 +81,7 @@ export function buildTimelines(
       if (tracked && typeof tracked === 'object') {
         for (const [key, val] of Object.entries(tracked as Record<string, unknown>)) {
           const b = readBackup(val);
-          if (b) addVersion(resolveSnapshotKey(key, launchCwd), b);
+          if (b) addVersion(resolveTrackingPath(key, launchCwd), b);
         }
       }
       continue;
