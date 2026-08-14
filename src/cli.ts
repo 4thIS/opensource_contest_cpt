@@ -7,7 +7,7 @@ import { parseArgs } from 'node:util';
 import { claudeHome, listSessionFiles } from './reader/discover.js';
 import { readSessionFile, type RawRecord } from './reader/jsonl.js';
 import { extractSessionMeta, groupIntoProjects } from './resolver/projects.js';
-import { pathKey, normalizePath } from './resolver/paths.js';
+import { pathKey, normalizePath, isAncestor } from './resolver/paths.js';
 import { auditProject } from './auditor/index.js';
 import { redactReport } from './redact/secrets.js';
 import { renderReport } from './renderer/render.js';
@@ -74,6 +74,27 @@ const HELP = `ccaudit ${TOOL_VERSION} — Claude Code가 이 저장소에 무엇
   --help              이 도움말
 `;
 
+/**
+ * cwd 가 속한 프로젝트를 고른다. 정확히 일치하는 것이 우선이고,
+ * 없으면 **가장 가까운(경로가 가장 긴)** 조상 프로젝트를 고른다.
+ * 먼저 발견된 조상을 쓰면 `C:/Users/x/work` 같은 먼 상위가 리포를 가로챈다.
+ */
+export function pickProject<T extends { root: string }>(
+  projects: T[],
+  cwd: string,
+): T | undefined {
+  const target = normalizePath(cwd);
+  const exact = projects.find((p) => pathKey(p.root) === pathKey(target));
+  if (exact) return exact;
+
+  let best: T | undefined;
+  for (const p of projects) {
+    if (!isAncestor(p.root, target)) continue;
+    if (!best || normalizePath(p.root).length > normalizePath(best.root).length) best = p;
+  }
+  return best;
+}
+
 export function runAudit(
   opts: CliOptions,
   cwd: string,
@@ -99,9 +120,7 @@ export function runAudit(
 
   const projects = groupIntoProjects(filtered);
   const target = normalizePath(cwd);
-  const project =
-    projects.find((p) => pathKey(p.root) === pathKey(target)) ??
-    projects.find((p) => pathKey(target).startsWith(`${pathKey(p.root)}/`));
+  const project = pickProject(projects, target);
 
   if (!project) {
     return {

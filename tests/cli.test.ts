@@ -1,5 +1,41 @@
 import { describe, it, expect } from 'vitest';
-import { parseCliArgs, runAudit } from '../src/cli.js';
+import { parseCliArgs, runAudit, pickProject } from '../src/cli.js';
+
+// 도그푸딩(2026-08-14)에서 잡은 결함: 조상 매칭이 배열에서 먼저 나온 것을 골라
+// 리포 대신 `C:/Users/ddj25/work` 가 프로젝트로 잡혔다. 가장 가까운 조상이어야 한다.
+describe('pickProject', () => {
+  const p = (root: string) => ({ root });
+
+  it('cwd 와 정확히 일치하는 프로젝트를 최우선으로 고른다', () => {
+    expect(pickProject([p('C:/a'), p('C:/a/b')], 'C:/a/b')?.root).toBe('C:/a/b');
+  });
+
+  it('조상이 여럿이면 가장 가까운(긴) 것을 고른다', () => {
+    expect(pickProject([p('C:/a'), p('C:/a/b')], 'C:/a/b/c')?.root).toBe('C:/a/b');
+  });
+
+  it('배열 순서에 좌우되지 않는다', () => {
+    expect(pickProject([p('C:/a/b'), p('C:/a')], 'C:/a/b/c')?.root).toBe('C:/a/b');
+  });
+
+  it('한글 경로에서도 가까운 조상을 고른다', () => {
+    const ps = [p('C:/Users/u/work'), p('C:/Users/u/work/공모전/오픈소스')];
+    expect(pickProject(ps, 'C:/Users/u/work/공모전/오픈소스/repo')?.root)
+      .toBe('C:/Users/u/work/공모전/오픈소스');
+  });
+
+  it('구분자와 대소문자가 달라도 맞춘다', () => {
+    expect(pickProject([p('C:/A/B')], 'c:\\a\\b\\c')?.root).toBe('C:/A/B');
+  });
+
+  it('조상이 없으면 undefined', () => {
+    expect(pickProject([p('C:/a')], 'D:/x')).toBeUndefined();
+  });
+
+  it('형제 경로를 조상으로 오인하지 않는다', () => {
+    expect(pickProject([p('C:/a/bc')], 'C:/a/bcd')).toBeUndefined();
+  });
+});
 
 describe('parseCliArgs', () => {
   it('기본값: redact 켜짐, transcript 포함, out은 ccaudit-report.html', () => {
