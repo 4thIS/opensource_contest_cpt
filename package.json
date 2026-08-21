@@ -3,12 +3,38 @@
   "version": "0.1.0",
   "description": "Audit what Claude Code actually did to your files — a single shareable HTML report",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/4thIS/opensource_contest_cpt.git"
+  },
+  "homepage": "https://github.com/4thIS/opensource_contest_cpt#readme",
+  "bugs": {
+    "url": "https://github.com/4thIS/opensource_contest_cpt/issues"
+  },
+  "keywords": [
+    "claude-code",
+    "claude",
+    "audit",
+    "diff",
+    "report",
+    "cli",
+    "git"
+  ],
   "type": "module",
-  "bin": { "ccaudit": "./dist/cli.js" },
-  "files": ["dist", "README.md", "LICENSE"],
-  "engines": { "node": ">=18.3.0" },
+  "bin": {
+    "ccaudit": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18.3.0"
+  },
   "scripts": {
     "build": "node scripts/build.mjs",
+    "prepublishOnly": "npm run build && npm test",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest"
