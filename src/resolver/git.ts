@@ -98,3 +98,17 @@ export function listBlobHashesForPath(root: string, relPath: string): Set<string
   }
   return out;
 }
+
+/**
+ * git 이 이 경로를 무시하는가(`.gitignore` 등).
+ *
+ * 무시되는 파일은 **커밋될 수 없으므로** git 을 판정 기준선으로 쓸 수 없다.
+ * 그런 파일에 '미커밋'이나 '유실'을 붙이면 `.env`·로그·작업 노트마다 거짓 경보가
+ * 뜨고 진짜 유실이 그 속에 묻힌다(도그푸딩 2026-08-21).
+ *
+ * `check-ignore` 는 무시될 때만 0 으로 끝난다. 실패(git 미설치·저장소 아님·무시 아님)는
+ * 전부 false 로 떨어져 기존 판정을 그대로 둔다 — 판단을 못 하겠으면 아무것도 바꾸지 않는다.
+ */
+export function isIgnored(root: string, relPath: string): boolean {
+  return git(root, ['check-ignore', '-q', '--', relPath]) !== null;
+}

@@ -5,7 +5,7 @@ import type {
 import { emptyReport, emptyTokenSum } from '../types.js';
 import type { Project, SessionMeta } from '../resolver/projects.js';
 import { hashPath, relativeTo, normalizePath } from '../resolver/paths.js';
-import { listBlobHashesForPath, findRepoForFile } from '../resolver/git.js';
+import { listBlobHashesForPath, findRepoForFile, isIgnored } from '../resolver/git.js';
 import { buildTimelines, type VersionEntry } from './timeline.js';
 import { loadVersion, loadCurrent, availabilityOf } from './content.js';
 import { makeDiff, countLines } from './diff.js';
@@ -211,7 +211,12 @@ export function auditProject(args: {
     const repo = findRepoForFile(acc.absPath, gitRootCache);
     const gitBlobs = repo ? listBlobHashesForPath(repo.root, repo.relPath) : null;
 
-    const gitState = classify({ finalContent, currentContent, gitBlobs });
+    // 무시되는 파일은 커밋된 적이 없으니 blob 이 하나도 없다. 그 경우에만 확인해
+    // 파일당 프로세스 하나를 더 띄우는 비용을 아낀다.
+    const ignored = repo !== null && gitBlobs !== null && gitBlobs.size === 0
+      && isIgnored(repo.root, repo.relPath);
+
+    const gitState = classify({ finalContent, currentContent, gitBlobs, ignored });
     const diff = makeDiff(originalContent, currentContent, relPath ?? acc.absPath);
     const availability = availabilityOf(
       acc.versionsBySession.flatMap((g) => g.versions),

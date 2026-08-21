@@ -45,3 +45,23 @@ describe('classify', () => {
     expect(classify({ finalContent: A, currentContent: A, gitBlobs: null })).toBe('unknown');
   });
 });
+
+// 도그푸딩(2026-08-21): .gitignore 로 무시되는 파일이 '유실'로 떴다.
+// 커밋될 수 없는 파일에 커밋 기준 판정을 붙이면 .env·로그·작업 노트마다 거짓
+// 경보가 뜨고, 진짜 유실이 그 속에 묻힌다. git 을 기준선으로 못 쓰면 unknown 이다.
+describe('classify — git이 무시하는 파일', () => {
+  it('디스크와 달라도 lost 가 아니라 unknown 이다', () => {
+    expect(classify({ finalContent: A, currentContent: B, gitBlobs: new Set(), ignored: true }))
+      .toBe('unknown');
+  });
+
+  it('디스크와 같아도 uncommitted 가 아니라 unknown 이다', () => {
+    expect(classify({ finalContent: A, currentContent: A, gitBlobs: new Set(), ignored: true }))
+      .toBe('unknown');
+  });
+
+  it('무시 대상이 아니면 판정은 그대로다', () => {
+    expect(classify({ finalContent: A, currentContent: B, gitBlobs: new Set(), ignored: false }))
+      .toBe('lost');
+  });
+});

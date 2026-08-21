@@ -2,7 +2,8 @@ import { describe, it, expect } from 'vitest';
 import os from 'node:os';
 import path from 'node:path';
 import { mkdtempSync, mkdirSync, writeFileSync } from 'node:fs';
-import { blobHash, findGitRoot, findRepoForFile } from '../src/resolver/git.js';
+import { execFileSync } from 'node:child_process';
+import { blobHash, findGitRoot, findRepoForFile, isIgnored } from '../src/resolver/git.js';
 import { normalizePath } from '../src/resolver/paths.js';
 
 // 플랜 원문은 'tests/fixtures/no-git' 과 'C:/__definitely__/__missing__' 을 썼으나
@@ -88,5 +89,38 @@ describe('findRepoForFile', () => {
     findRepoForFile(path.join(repo, 'src', 'b.ts'), cache);
     expect(cache.size).toBe(1);
     expect([...cache.values()][0]).toBe(normalizePath(repo));
+  });
+});
+
+// 도그푸딩(2026-08-21): .gitignore 로 무시되는 파일에 '유실'이 붙었다.
+// git 이 없는 환경에서도 죽지 않아야 하므로, 실패는 전부 "무시 아님"으로 떨어진다.
+describe('isIgnored', () => {
+  function gitRepo(): string | null {
+    const dir = mkdtempSync(path.join(OUTSIDE_REPO, 'ccaudit-ignore-'));
+    try {
+      execFileSync('git', ['-C', dir, 'init', '-q'], { stdio: 'ignore', windowsHide: true });
+    } catch {
+      return null;   // git 미설치 — 이 테스트는 건너뛴다
+    }
+    writeFileSync(path.join(dir, '.gitignore'), 'secret.env\n');
+    writeFileSync(path.join(dir, 'secret.env'), 'KEY=1');
+    writeFileSync(path.join(dir, 'app.ts'), 'x');
+    return dir;
+  }
+
+  it('.gitignore 에 걸린 파일은 무시로 본다', () => {
+    const dir = gitRepo();
+    if (!dir) return;
+    expect(isIgnored(dir, 'secret.env')).toBe(true);
+  });
+
+  it('무시 대상이 아닌 파일은 false 다', () => {
+    const dir = gitRepo();
+    if (!dir) return;
+    expect(isIgnored(dir, 'app.ts')).toBe(false);
+  });
+
+  it('저장소가 아니면 false 다 (판정을 바꾸지 않는다)', () => {
+    expect(isIgnored(OUTSIDE_REPO, 'whatever.txt')).toBe(false);
   });
 });
