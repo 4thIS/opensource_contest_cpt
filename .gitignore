@@ -2,3 +2,4 @@ node_modules/
 dist/
 *.log
 ccaudit-report.html
+.playwright-mcp/
