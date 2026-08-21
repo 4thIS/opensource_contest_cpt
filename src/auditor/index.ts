@@ -4,7 +4,9 @@ import type {
 } from '../types.js';
 import { emptyReport, emptyTokenSum } from '../types.js';
 import type { Project, SessionMeta } from '../resolver/projects.js';
-import { hashPath, relativeTo, normalizePath } from '../resolver/paths.js';
+import os from 'node:os';
+import path from 'node:path';
+import { hashPath, relativeTo, normalizePath, isAncestor } from '../resolver/paths.js';
 import { listBlobHashesForPath, findRepoForFile, isIgnored } from '../resolver/git.js';
 import { buildTimelines, type VersionEntry } from './timeline.js';
 import { loadVersion, loadCurrent, availabilityOf } from './content.js';
@@ -94,6 +96,18 @@ export function shouldWarnMissingBackup(
   if (versions.length === 0) return true;   // 복원 근거가 아예 없다
   const suspect = status === 'created' ? versions.slice(1) : versions;
   return suspect.some((v) => v.backupFile === null);
+}
+
+/**
+ * Claude Code 자신의 작업공간인가 (세션 홈 `~/.claude`, 스크래치패드 `<tmp>/claude/…`).
+ *
+ * 도구가 자기 폴더에 쓴 것을 "프로젝트 밖 파일 수정"으로 경고하면 실제 리포에서
+ * 경고의 대부분이 그것으로 채워진다(도그푸딩: 13건 중 8건). 파일 목록에는 그대로
+ * 남겨 감추지 않고, **경고만** 내리지 않는다.
+ */
+export function isAgentWorkspacePath(absPath: string, home: string): boolean {
+  if (isAncestor(home, absPath)) return true;
+  return isAncestor(normalizePath(path.join(os.tmpdir(), 'claude')), absPath);
 }
 
 export function auditProject(args: {
@@ -222,7 +236,11 @@ export function auditProject(args: {
       acc.versionsBySession.flatMap((g) => g.versions),
     );
 
-    if (shouldWarnMissingBackup(status, acc.versionsBySession.flatMap((g) => g.versions))) {
+    const agentOwned = isAgentWorkspacePath(acc.absPath, home);
+
+    const holes = shouldWarnMissingBackup(status, acc.versionsBySession.flatMap((g) => g.versions));
+
+    if (!agentOwned && holes) {
       warnings.push({
         kind: 'missing-backup',
         severity: 'low',
@@ -230,6 +248,7 @@ export function auditProject(args: {
         ref: id,
       });
     }
+    // 유실은 도구의 작업공간이라도 알린다 — 없어진 내용은 어디에 있었든 정보다.
     if (gitState === 'lost') {
       warnings.push({
         kind: 'lost-change',
@@ -238,7 +257,7 @@ export function auditProject(args: {
         ref: id,
       });
     }
-    if (relPath === null) {
+    if (relPath === null && !agentOwned) {
       warnings.push({
         kind: 'external-write',
         severity: 'medium',

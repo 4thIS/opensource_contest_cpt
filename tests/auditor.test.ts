@@ -2,7 +2,11 @@ import { describe, it, expect } from 'vitest';
 import { readSessionFile } from '../src/reader/jsonl.js';
 import { listSessionFiles } from '../src/reader/discover.js';
 import { extractSessionMeta, groupIntoProjects } from '../src/resolver/projects.js';
-import { auditProject, shouldWarnMissingBackup } from '../src/auditor/index.js';
+import os from 'node:os';
+import { normalizePath } from '../src/resolver/paths.js';
+import {
+  auditProject, shouldWarnMissingBackup, isAgentWorkspacePath,
+} from '../src/auditor/index.js';
 import type { RawRecord } from '../src/reader/jsonl.js';
 
 function auditAll(home: string) {
@@ -137,5 +141,30 @@ describe('auditProject — resumed-session 픽스처', () => {
 
   it('토큰 합계도 두 배가 되지 않는다', () => {
     expect(report().stats.tokens.input).toBe(10 + 11 + 12);
+  });
+});
+
+// 도그푸딩(2026-08-21): 경고 13건 중 8건이 Claude Code 자신의 스크래치패드·세션 홈에
+// 대한 쓰기였다. 도구가 자기 작업공간에 쓴 것을 "프로젝트 밖 파일 수정"이라고 경고하면
+// 진짜 경고가 그 속에 묻힌다. 파일 목록에는 그대로 남기고 경고만 내리지 않는다.
+describe('isAgentWorkspacePath', () => {
+  const home = 'C:/Users/t/.claude';
+
+  it('세션 홈 아래 파일은 도구의 작업공간이다', () => {
+    expect(isAgentWorkspacePath('C:/Users/t/.claude/projects/p/memory/m.md', home)).toBe(true);
+  });
+
+  it('스크래치패드 아래 파일도 도구의 작업공간이다', () => {
+    const p = `${normalizePath(os.tmpdir())}/claude/proj/sess/scratchpad/x.mjs`;
+    expect(isAgentWorkspacePath(p, home)).toBe(true);
+  });
+
+  it('사용자 파일은 아니다', () => {
+    expect(isAgentWorkspacePath('C:/Users/t/work/app/src/a.ts', home)).toBe(false);
+  });
+
+  it('이름만 비슷한 이웃 폴더에 걸리지 않는다', () => {
+    expect(isAgentWorkspacePath('C:/Users/t/.claude-backup/x.md', home)).toBe(false);
+    expect(isAgentWorkspacePath(`${normalizePath(os.tmpdir())}/claudex/x.mjs`, home)).toBe(false);
   });
 });
