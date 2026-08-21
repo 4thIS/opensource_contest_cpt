@@ -106,4 +106,6 @@ Windows·macOS·Linux × Node 18·20 매트릭스로 CI를 돌립니다.
 
 ## 라이선스
 
-MIT
+MIT. 번들에 포함된 서드파티 코드의 고지는 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)
+에 있습니다 — 런타임 의존성은 `diff`(BSD-3-Clause) 하나뿐입니다.
+검증 내역은 [docs/license-report.md](docs/license-report.md).
