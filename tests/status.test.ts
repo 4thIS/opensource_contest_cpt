@@ -48,6 +48,7 @@ function sessionMeta(): SessionMeta {
     endedAt: AT,
     firstPrompt: '',
     inProgress: false,
+    messageIds: [],
     projectDir: 'irrelevant',
   };
 }

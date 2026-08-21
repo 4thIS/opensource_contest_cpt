@@ -117,3 +117,25 @@ describe('shouldWarnMissingBackup', () => {
     expect(shouldWarnMissingBackup('deleted', [])).toBe(true);
   });
 });
+
+describe('auditProject — resumed-session 픽스처', () => {
+  const report = () => auditAll('tests/fixtures/resumed-session')[0]!;
+
+  it('이어받기로 중복된 세션을 두 번 세지 않는다', () => {
+    expect(report().stats.sessions).toBe(1);
+  });
+
+  it('버전 체인이 v1·v2·v3 로 한 번씩만 잡힌다', () => {
+    const f = report().files.find((x) => x.absPath.endsWith('app.ts'))!;
+    expect(f.versions.map((v) => v.version)).toEqual([1, 2, 3]);
+  });
+
+  it('같은 편집이 두 세션에 걸쳐 두 번 기록되지 않는다', () => {
+    const f = report().files.find((x) => x.absPath.endsWith('app.ts'))!;
+    expect(f.touches.map((t) => t.messageId)).toEqual(['a1', 'a2', 'a3']);
+  });
+
+  it('토큰 합계도 두 배가 되지 않는다', () => {
+    expect(report().stats.tokens.input).toBe(10 + 11 + 12);
+  });
+});
