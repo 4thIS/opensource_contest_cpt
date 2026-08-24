@@ -1,0 +1,4 @@
+{"type":"ai-title","aiTitle":"기록 중인 세션","sessionId":"66666666-6666-6666-6666-666666666666"}
+{"type":"user","uuid":"u1","timestamp":"2026-07-25T05:00:00.000Z","cwd":"C:\\Users\\testuser\\work\\inprog","sessionId":"66666666-6666-6666-6666-666666666666","version":"2.0.0","gitBranch":"main","message":{"role":"user","content":"[redacted prompt]"}}
+{"type":"assistant","uuid":"a1","timestamp":"2026-07-25T05:00:20.000Z","cwd":"C:\\Users\\testuser\\work\\inprog","sessionId":"66666666-6666-6666-6666-666666666666","version":"2.0.0","message":{"role":"assistant","model":"claude-opus-5","content":[{"type":"tool_use","id":"t1","name":"Write","input":{"file_path":"C:/Users/testuser/work/inprog/wip.md"}}],"usage":{"input_tokens":10,"output_tokens":20,"cache_read_input_tokens":0,"cache_creation_input_tokens":0}}}
+{"type":"assistant","uuid":"a9","time

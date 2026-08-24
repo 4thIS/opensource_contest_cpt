@@ -1,0 +1,15 @@
+# gitattributes 는 뒤에 오는 규칙이 이긴다. 일반 규칙을 먼저, 예외를 나중에 둔다.
+
+# 소스는 리포에 LF 로 저장하고 체크아웃은 각자 환경에 맡긴다.
+* text=auto
+
+# 줄바꿈에 의미가 있는 셸 스크립트는 항상 LF.
+*.sh text eol=lf
+
+# 픽스처는 바이트 그대로 유지한다.
+#
+# core.autocrlf 가 켜진 환경에서 clone 하면 git 이 LF 를 CRLF 로 바꿔 체크아웃한다.
+# 픽스처는 diff 생성(Task 4.3)과 git blob 해시 대조(Task 4.4)의 입력이라,
+# 줄바꿈이 바뀌면 해시가 통째로 달라져 "내 머신에서만 통과"하는 테스트가 된다.
+# -text 는 EOL 변환을 완전히 끈다.
+tests/fixtures/** -text
