@@ -15,6 +15,20 @@ cd C:/ccaudit-demo/할일앱
 git log --oneline                              # 커밋 3개가 보이면 준비 완료
 ```
 
+**녹화 전 반드시 — 이 한 줄을 빼면 데모가 아니라 진짜 내 기록이 찍힌다.**
+촬영용 터미널에서 데모 홈을 가리키게 한다. 설정하지 않으면 `npx openccaudit` 이
+**실제 `~/.claude`** 를 읽어 진짜 프로젝트 경로와 사용자 이름이 화면에 그대로 나온다
+(아래 촬영 체크리스트 2번 위반).
+
+```powershell
+$env:CCAUDIT_CLAUDE_HOME = "C:\ccaudit-demo\.claude"    # PowerShell
+export CCAUDIT_CLAUDE_HOME=~/ccaudit-demo/.claude        # bash·zsh
+```
+
+환경변수는 **터미널 창마다 따로**다. 새 창을 열면 다시 설정한다.
+이렇게 해 두면 화면에 뜨는 명령은 대본 그대로 `npx openccaudit --open` 한 줄인데
+읽는 데이터는 데모다 — 우선순위가 `--home` > `CCAUDIT_CLAUDE_HOME` > `~/.claude` 이기 때문이다.
+
 촬영용 두 번째 터미널은 이 폴더에서 열어 둔다. 리포트는 미리 한 번 생성해
 브라우저 캐시를 데워 두되, **녹화 시작 전에 탭을 닫는다**.
 
@@ -124,3 +138,4 @@ ls ~/.claude/projects/
 - [ ] 터미널 글씨가 1080p 에서 읽힌다
 - [ ] 유실 장면에서 `git log` 로 "정말 없다"를 증명했다
 - [ ] 마지막 3초에 저장소 주소가 정지 화면으로 남는다
+- [ ] `CCAUDIT_CLAUDE_HOME` 이 데모 홈을 가리킨다 (진짜 `~/.claude` 가 아니다)
