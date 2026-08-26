@@ -1,5 +1,5 @@
 {
-  "name": "ccaudit",
+  "name": "openccaudit",
   "version": "0.1.0",
   "description": "Audit what Claude Code actually did to your files — a single shareable HTML report",
   "license": "MIT",

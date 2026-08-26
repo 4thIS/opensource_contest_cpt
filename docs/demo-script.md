@@ -23,7 +23,7 @@ git log --oneline                              # 커밋 3개가 보이면 준비
 | 데모 저장소 (`tools/demo.mjs`) | 5개 파일이 각각 다른 git 상태 |
 | 터미널 2개 | ① 저장소 폴더 ② 리포트 생성용 |
 | `.env` 파일 | 마스킹 장면용 — 화면에 열지 않는다 |
-| 네트워크 | `npx ccaudit` 첫 실행이 느릴 수 있어 사전 워밍업 |
+| 네트워크 | `npx openccaudit` 첫 실행이 느릴 수 있어 사전 워밍업 |
 
 ---
 
@@ -48,7 +48,7 @@ git log --oneline   # 커밋 3개. 그 사이에 무슨 일이 있었는지는 �
 > "설치할 것 없습니다. 한 줄이면 됩니다."
 
 ```bash
-npx ccaudit --open
+npx openccaudit --open
 ```
 
 화면에 그대로 나오는 두 줄을 잠깐 보여준다.
@@ -112,7 +112,7 @@ ls ~/.claude/projects/
 - **시크릿 마스킹이 기본.** 상단 "시크릿 4건이 마스킹되었습니다" 배너를 짚는다.
 - **MIT · npm 공개 · Windows/macOS/Linux × Node 18·20 CI 그린.**
 
-마지막 화면: `npx ccaudit --open` 한 줄과 저장소 주소.
+마지막 화면: `npx openccaudit --open` 한 줄과 저장소 주소.
 
 ---
 

@@ -19,7 +19,7 @@ ccaudit은 `~/.claude`에 남은 세션 기록과 파일 백업을 읽어, 저�
 ## 설치 없이 실행
 
 ```bash
-npx ccaudit --open
+npx openccaudit --open
 ```
 
 감사할 저장소 폴더에서 실행하면 `ccaudit-report.html` 한 개가 만들어지고 브라우저로 열립니다.

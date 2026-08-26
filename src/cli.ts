@@ -62,7 +62,7 @@ export function parseCliArgs(argv: string[]): CliOptions {
 
 const HELP = `ccaudit ${TOOL_VERSION} — Claude Code가 이 저장소에 무엇을 했는지 감사합니다.
 
-사용법:  npx ccaudit [옵션]
+사용법:  npx openccaudit [옵션]
 
   --out <path>        출력 경로 (기본: ccaudit-report.html)
   --open              생성 후 브라우저로 엽니다
