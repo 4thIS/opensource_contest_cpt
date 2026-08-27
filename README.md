@@ -6,6 +6,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![npm](https://img.shields.io/npm/v/openccaudit.svg)](https://www.npmjs.com/package/openccaudit)
 
+> 📺 **[3분 시연영상 보기](https://www.youtube.com/watch?v=KLH3u8yIG7A)**
+
 ## 문제
 
 Claude Code를 며칠 쓰고 나면 답할 수 없는 질문이 생깁니다.
