@@ -1,28 +1,28 @@
 # 라이선스 검증 리포트
 
-- 대상: `ccaudit@0.1.0`
+- 대상: `openccaudit@0.1.0`
 - 배포 라이선스: **MIT** (`LICENSE`)
-- 검사일: 2026-08-21
+- 검사일: 2026-08-21 · 재검증 2026-08-26 (패키지명 변경 후)
 - 도구: `npx license-checker-rseidelsohn`
 
 ## 런타임 의존성 (배포되는 코드가 실제로 쓰는 것)
 
 ```
 $ npx license-checker-rseidelsohn --production
-├─ ccaudit@0.1.0
-│  ├─ licenses: MIT
-│  ├─ repository: https://github.com/4thIS/opensource_contest_cpt
-│  └─ licenseFile: LICENSE
-└─ diff@5.2.2
-   ├─ licenses: BSD-3-Clause
-   ├─ repository: https://github.com/kpdecker/jsdiff
-   └─ licenseFile: node_modules/diff/LICENSE
+├─ diff@5.2.2
+│  ├─ licenses: BSD-3-Clause
+│  ├─ repository: https://github.com/kpdecker/jsdiff
+│  └─ licenseFile: node_modules/diff/LICENSE
+└─ openccaudit@0.1.0
+   ├─ licenses: MIT
+   ├─ repository: https://github.com/4thIS/opensource_contest_cpt
+   └─ licenseFile: LICENSE
 ```
 
 ```
 $ npx license-checker-rseidelsohn --production --summary
-├─ MIT: 1
-└─ BSD-3-Clause: 1
+├─ BSD-3-Clause: 1
+└─ MIT: 1
 ```
 
 **런타임 의존성은 `diff`(BSD-3-Clause) 하나뿐이다.** BSD-3-Clause 는 MIT 와 마찬가지로
@@ -49,7 +49,7 @@ $ npx license-checker-rseidelsohn --summary
 $ npm pack --dry-run
 LICENSE · README.md · THIRD-PARTY-NOTICES.md
 dist/cli.js · dist/report-app.js · dist/report.css · package.json
-총 7개 파일, 22.1 kB
+총 7개 파일, 22.2 kB
 ```
 
 ## 코드 출처

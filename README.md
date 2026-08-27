@@ -4,6 +4,9 @@
 
 [![CI](https://github.com/4thIS/opensource_contest_cpt/actions/workflows/ci.yml/badge.svg)](https://github.com/4thIS/opensource_contest_cpt/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![npm](https://img.shields.io/npm/v/openccaudit.svg)](https://www.npmjs.com/package/openccaudit)
+
+> 📺 **[3분 시연영상 보기](https://www.youtube.com/watch?v=KLH3u8yIG7A)**
 
 ## 문제
 
@@ -19,16 +22,18 @@ ccaudit은 `~/.claude`에 남은 세션 기록과 파일 백업을 읽어, 저�
 ## 설치 없이 실행
 
 ```bash
-npx ccaudit --open
+npx openccaudit --open
 ```
 
 감사할 저장소 폴더에서 실행하면 `ccaudit-report.html` 한 개가 만들어지고 브라우저로 열립니다.
 읽기만 합니다 — 저장소의 파일을 고치거나 지우지 않습니다.
 
+> npm 패키지 이름은 `openccaudit`, 설치 후 실행하는 **명령어는 `ccaudit`** 입니다.
+> 전역으로 두고 쓰려면 `npm i -g openccaudit` 후 `ccaudit --open`.
+
 ## 무엇이 나오나
 
 ![파일 감사 탭 — 한 화면에 git 4분류가 다 보인다](docs/img/report-files.png)
-
 
 - **파일이 1급 객체입니다.** 어떤 파일이 생성·수정됐고, 어느 세션이 언제 몇 번 건드렸는지.
 - **원본 → 현재 diff.** git에 커밋되지 않은 변경까지 그대로 보여줍니다.
@@ -37,7 +42,7 @@ npx ccaudit --open
 - **대화 연결.** 파일에서 그 변경을 만든 세션·메시지로, 세션에서 그 세션이 건드린 파일로.
 - **단일 HTML.** 서버도 의존성도 없이 파일 하나. 팀에 공유하거나 CI 아티팩트로 남길 수 있습니다.
 
-파일을 펼치면 **원본 → 현재** diff 가 그대로 나옵니다.
+파일을 펼치면 diff 가 그대로 나옵니다.
 
 ![파일을 펼친 diff 화면](docs/img/report-diff.png)
 
@@ -47,7 +52,7 @@ npx ccaudit --open
 > ```bash
 > node tools/demo.mjs                       # <tmp>/ccaudit-demo 에 데모 저장소·세션 생성
 > cd <출력된 저장소 경로>
-> node <ccaudit>/dist/cli.js --home <출력된 홈 경로> --open
+> npx openccaudit --home "<출력된 홈 경로>" --open
 > ```
 
 ## 옵션
@@ -62,6 +67,9 @@ npx ccaudit --open
 | `--home <path>` | `~/.claude` 위치를 직접 지정합니다 |
 | `--no-color` | 터미널 색상을 끕니다 |
 | `--help` | 도움말 |
+
+`--home` 대신 환경변수 `CCAUDIT_CLAUDE_HOME` 으로도 지정할 수 있습니다.
+우선순위는 `--home` > `CCAUDIT_CLAUDE_HOME` > `~/.claude` 입니다.
 
 ## 보안
 
